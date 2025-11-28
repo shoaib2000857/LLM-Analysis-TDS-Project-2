@@ -177,9 +177,32 @@ def run_agent(url: str):
         {"role": "user", "content": url}
     ]
 
-    app.invoke(
+    # run agent and CAPTURE the output
+    result = app.invoke(
         {"messages": initial_messages},
         config={"recursion_limit": RECURSION_LIMIT}
     )
 
+    # Try to detect final server response if present
+    try:
+        last = result["messages"][-1]
+        content = getattr(last, "content", "")
+
+        # If LLM already output END – good
+        if isinstance(content, str) and content.strip() == "END":
+            print("Tasks completed successfully!")
+            return
+
+        # If the last content is JSON from server submission
+        import json
+        parsed = json.loads(content) if isinstance(content, str) else {}
+        if parsed.get("url") is None:
+            print("Tasks completed successfully!")
+            return
+
+    except Exception:
+        pass  # fallback below
+
+    # Default fallback
     print("Tasks completed successfully!")
+

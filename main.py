@@ -31,6 +31,18 @@ def healthz():
         "uptime_seconds": int(time.time() - START_TIME)
     }
 
+import requests
+
+@app.get("/test_google")
+def test_google():
+    try:
+        url = "https://speech.googleapis.com/v1/speech:recognize"
+        r = requests.post(url, timeout=5)
+        return {"status": r.status_code, "text": r.text[:200]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 @app.post("/solve")
 async def solve(request: Request, background_tasks: BackgroundTasks):
     try:

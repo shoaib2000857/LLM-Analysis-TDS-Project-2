@@ -6,6 +6,7 @@ colorTo: blue
 sdk: docker
 pinned: false
 app_port: 7860
+license: apache-2.0
 ---
 
 # LLM Analysis - Autonomous Quiz Solver Agent
